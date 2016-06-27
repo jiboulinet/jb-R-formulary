@@ -1,0 +1,160 @@
+
+library(Pmetrics)
+#1) Define your error model using makeErrorPoly
+makeErrorPoly(obs, sd)
+#2)Create the PMtree in your working directory
+setwd("C:/Documents and Settings/u850/Bureau/ratna_mmf")
+PMtree("MMF")
+#3)Put yours files in the Runs file and check your model
+#check the files in your working directory using 
+list.files()
+
+#data splitting
+#load your dataset
+setwd("C:/Users/Inserm/Desktop/jb/Dropbox/bureau_fac/WS malaysia")
+mdata<-PMreadMatrix("ex.csv")
+head(mdata)
+#make the partition of datas
+mdata_1<-subset(mdata, time==0)
+library(caret)
+set.seed(107)
+inTrain <- createDataPartition(y = mdata_1$id, p = .75, list = FALSE)## The #percentage and format of the results
+#create development and validation dataset
+development <- mdata[ mdata$id%in%inTrain,]
+validation  <- mdata[!mdata$id%in%inTrain,]
+PMwriteMatrix(training,"exdev.csv")
+PMwriteMatrix(training,"exval.csv")
+
+PMcheck("mmf.csv", "model.txt", fix = F, quiet = F)
+#4) run the model after checking your working directory
+setwd("C:/Documents and Settings/u850/Bureau/ratna_mmf/Runs")
+list.files()
+NPrun(model="gammaem.txt",data="mmf.csv",cycles=500)
+
+#5)load the results
+PMload(1)
+
+#6)GOF 
+##Sphaghetti_plot
+pdf(file="spaghetti plot.pdf")
+plot(mdata.1,overlay=T,xlim=c(0,12))
+dev.off()
+##ipred dv
+pdf(file="post.pdf")
+  plot(op.1,pred.type="post",resid=T, icen="median", ident=T)#or pop
+dev.off()
+##residus
+pdf(file="residus.pdf")
+  plot(op.1,pred.type="post",resid=T, icen="median")#or pop
+  par(ask=F)
+dev.off()
+ipred<-subset(op.1,pred.type=="post")#dv ip
+pred<-subset(op.1,pred.type=="pop")#d
+write.table(ipred,file="ipred_dv_time.txt")
+
+
+
+
+#7)make individual plots
+pdf(file="plot_eb.pdf")
+plot(mdata.3,pred=post.3,overlay=F,pch=3,cex=1,lwd=2,join=F,doses=F,legend=F,log=F)
+
+dev.off()
+
+
+#8) try to change models or the limits of your parameters to increase the fit and rerun it and compare yours models
+
+PMcompare(1,2,3)#you can add plots using plot=T
+
+
+#9) first test association cov/param
+#continuous cov
+PMstep(cov.1)
+#binary cov
+wilcox.test(C0 ~sex, data=cov.1) 
+#multicategorical cov
+kruskal.test(CYP~C0,data=cov.1)
+
+#10) include significants cov in your model file
+#classical coding is param*(cov/median cov)**0.75 ou param*(cov/median cov)**0.75 (modele puissance) put it in #Sec or param1+ccr*param2 avec param 1 et 2 dans #Pri à estimer = (modèle linéaire)
+#rerun the NPrun cf #4) ex linear association CL=THETA(1)+THETA(2)*WT/70,exponential association: CL=THETA(1)*EXP(THETA(2)*WT/70) or power model CL=THETA(1)*(WT/70)**THETA(2) 
+
+#11) Internal validation put your model.txt and your data set in working dir sim
+# and be sure to have made PMload for your "good" model and keep the number in mind (here is n°4)
+SIMrun(poppar=final.4, data = "mmf.csv", split = T, nsim = 1000, model = "gammaem.txt", include=1:5)
+#parse the results
+simdata <- SIMparse("simout*.txt", combine=T)
+#VPC
+?plot.PMsim
+a<-plot(simdata, mult = 1, log = T,probs = c(0.05, 0.5, 0.95), obs=op.4,ci=0,xlab="Time (h)",ylab="MPA concentration (mg/l)",ocol="darkgrey")
+write.csv2(a$simsum, file="vpc_foie_pmetrics_graphpad.csv")
+
+#12) Optimal sampling determination for LSS
+#create a new csv file with only the time that you want for your lss and only 1 patient eg (time at 0,0.5,1,1.5,2,3,4) cf sim.csv
+tps_opt<-MMopt(poppar=final.4, model = "gammaem.txt", predInt=0,data = "mmf.csv", nsamp = 4, outeq = 1)
+plot(tps_opt)
+
+
+#load the validation dataset or give the right name
+mdata<-PMreadMatrix("tacrol.csv")##here is the name of your validation dataset 
+#function to select the optimal times
+opt_t3<-function(a, b, c){
+lss<-subset(mdata,evid==1|(time>=a-(0.15*a)&time<=a+(0.15*a))|(time>b-(0.15*b)&time<b+(0.15*b))|(time>c-(0.15*c)&time<c+(0.15*c)))
+ lss1<-lss[ order(lss$id,lss$time) ,]
+head(lss1)
+PMwriteMatrix(lss1,"lss.csv",override=T)
+}
+#use the function
+opt_t3(0,0.5,4)#give here the time that you wants
+
+#14)bayesian estimation and inference for new patient
+NPrun(model=4,data="lss.csv", prior=NPdata.4, cycles=0)
+PMload(5)
+
+#15)plot curve straight line is the bayesian fitted curve with LSS and points are all the observed points
+#plot courbes 3 pts et tous points
+pdf(file="plot_eb_LSS_4pts.pdf")
+plot(mdata.4,pred=post.5,overlay=F,pch=3,cex=1,lwd=2,xlim=c(0,12),join=F,doses=F,legend=F,log=F)
+
+#16) evaluate your BE by calculation of bias and precision
+Function to calculate the mean and sd relative bias and relative RMSE and number of profils out of a p interval
+#Function to calculate the mean and sd relative bias and relative RMSE and number of profils out of a p interval,
+#function to calculate the mean and sd relative bias and relative RMSE and number of profils out of a p interval
+compauc<-function(start=x, end=y, prob=p, runnumber=z){
+  post <- get(paste("post",runnumber,sep="."))
+  AUC_3pts_lss<-makeAUC(post,pred~time,start =x,end=y, icen="median")
+  names(AUC_3pts_lss)[2]<-"AUC_3pts_lss"
+  head(AUC_3pts_lss)
+  #auc trapezoid
+  mdata_b<-subset(mdataval,evid==0)
+  auc_trap<-makeAUC(mdata_b,out~time,start = x,end=y)
+  names(auc_trap)[2]<-"auc_trap"
+  head(auc_trap)
+  #file with the 2 aucs
+  comp_auc<-merge(auc_trap,AUC_3pts_lss )
+  #relative bias
+  comp_auc$bias<-(comp_auc$AUC_3pts_lss-comp_auc$auc_trap)/comp_auc$auc_trap
+  #relative square bias
+  comp_auc$sbias<-((comp_auc$AUC_3pts_lss-comp_auc$auc_trap)/comp_auc$auc_trap)*((comp_auc$AUC_3pts_lss-comp_auc$auc_trap)/comp_auc$auc_trap)
+  delet<-comp_auc[comp_auc$AUC_3pts_lss=="Inf", ]
+  comp_auc <- comp_auc[!comp_auc$id%in%delet,]
+  #RMSE
+  #relative root mean square error
+  rmse<-sqrt(mean(comp_auc$sbias))
+  #mean,sd, range, number of outside +/- p interval bias
+  mean=mean(comp_auc$bias, na.rm=T)
+  sd=sd(comp_auc$bias)
+  range=range(comp_auc$bias)
+  number_out=sum(sum(comp_auc[,4]>p)+sum(comp_auc[,4]<=-p))# replace p for limits of your auc exclusion ex 0.1 or 0.2
+  return(list(mean_rel_bias=mean,sd_rel_bias=sd,range_rel_bias=range,number_out=number_out,rmse_rel_bias=rmse))
+
+}
+compauc(start=0,end=24,prob=0.2, runnumber=3)#
+
+
+
+
+
+
+
+
