@@ -9,21 +9,38 @@ PMtree("MMF")
 #check the files in your working directory using 
 list.files()
 
-#data splitting
-#load your dataset
-setwd("C:/Users/Inserm/Desktop/jb/Dropbox/bureau_fac/WS malaysia")
-mdata<-PMreadMatrix("ex.csv")
+# #data splitting
+# #load your dataset
+# setwd("C:/Users/Inserm/Desktop/jb/Dropbox/bureau_fac/WS malaysia")
+# mdata<-PMreadMatrix("ex.csv")
+# head(mdata)
+# #make the partition of datas
+# mdata_1<-subset(mdata, time==0)
+# library(caret)
+# set.seed(107)
+# inTrain <- createDataPartition(y = mdata_1$id, p = .75, list = FALSE)## The #percentage and format of the results
+# #create development and validation dataset
+# development <- mdata[ mdata$id%in%inTrain,]
+# validation  <- mdata[!mdata$id%in%inTrain,]
+# PMwriteMatrix(training,"exdev.csv")
+# PMwriteMatrix(training,"exval.csv")
+setwd("C:/Users/woillp01/Desktop/AADAPT 2016/130716")
+mdata<-PMreadMatrix("proadv2.csv")
 head(mdata)
-#make the partition of datas
-mdata_1<-subset(mdata, time==0)
-library(caret)
-set.seed(107)
-inTrain <- createDataPartition(y = mdata_1$id, p = .75, list = FALSE)## The #percentage and format of the results
+mdata_1<-subset(mdata, time==0&evid!=0)
+set.seed(1)
+a<-sample(c(1, 2), 108, replace=T, prob=c(0.75, 0.25))
+b<-data.frame(mdata_1, a)
+dev<-subset(b, a==1)
+# library(caret)
+# set.seed(107)
+# inTrain <- createDataPartition(y = mdata$id, p = .75, list = FALSE)## The #percentage and format of the results
 #create development and validation dataset
-development <- mdata[ mdata$id%in%inTrain,]
-validation  <- mdata[!mdata$id%in%inTrain,]
-PMwriteMatrix(training,"exdev.csv")
-PMwriteMatrix(training,"exval.csv")
+development <- mdata[ mdata$id%in%dev$id,]
+validation  <- mdata[!mdata$id%in%dev$id,]
+PMwriteMatrix(development,"exdev.csv")
+PMwriteMatrix(validation,"exval.csv")
+
 
 PMcheck("mmf.csv", "model.txt", fix = F, quiet = F)
 #4) run the model after checking your working directory
@@ -76,11 +93,11 @@ wilcox.test(C0 ~sex, data=cov.1)
 kruskal.test(CYP~C0,data=cov.1)
 
 #10) include significants cov in your model file
-#classical coding is param*(cov/median cov)**0.75 ou param*(cov/median cov)**0.75 (modele puissance) put it in #Sec or param1+ccr*param2 avec param 1 et 2 dans #Pri à estimer = (modèle linéaire)
+#classical coding is param*(cov/median cov)**0.75 ou param*(cov/median cov)**0.75 (modele puissance) put it in #Sec or param1+ccr*param2 avec param 1 et 2 dans #Pri Ã  estimer = (modÃ¨le linÃ©aire)
 #rerun the NPrun cf #4) ex linear association CL=THETA(1)+THETA(2)*WT/70,exponential association: CL=THETA(1)*EXP(THETA(2)*WT/70) or power model CL=THETA(1)*(WT/70)**THETA(2) 
 
 #11) Internal validation put your model.txt and your data set in working dir sim
-# and be sure to have made PMload for your "good" model and keep the number in mind (here is n°4)
+# and be sure to have made PMload for your "good" model and keep the number in mind (here is nÂ°4)
 SIMrun(poppar=final.4, data = "mmf.csv", split = T, nsim = 1000, model = "gammaem.txt", include=1:5)
 #parse the results
 simdata <- SIMparse("simout*.txt", combine=T)
