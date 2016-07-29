@@ -98,7 +98,7 @@ kruskal.test(CYP~C0,data=cov.1)
 
 #11) Internal validation put your model.txt and your data set in working dir sim
 # and be sure to have made PMload for your "good" model and keep the number in mind (here is n°4)
-SIMrun(poppar=final.4, data = "mmf.csv", split = T, nsim = 1000, model = "gammaem.txt", include=1:5)
+SIMrun(poppar=final.4, data = "mmf.csv",limits=NA, predInt=c(0,24,1), split = T, nsim = 1000, model = "gammaem.txt", include=1:5)
 #parse the results
 simdata <- SIMparse("simout*.txt", combine=T)
 #VPC
