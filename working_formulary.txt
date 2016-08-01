@@ -108,9 +108,8 @@ write.csv2(a$simsum, file="vpc_foie_pmetrics_graphpad.csv")
 ##pour un sous ensemble (cov)
 brule_visite0<-subset(cov.29, brule==1&visite==0&icen=="median"&time==0)
 name_pat<-data.frame(id=unique(brule_visite0$id))
-op.b0<-merge(name_pat, op.29)
-#ou
-op.b0b <- op.29[ op.29$id%in%name_pat$id,]
+ op.b0 <- op.29[ op.29$id%in%name_pat$id,]
+
 
 #12) Optimal sampling determination for LSS
 #create a new csv file with only the time that you want for your lss and only 1 patient eg (time at 0,0.5,1,1.5,2,3,4) cf sim.csv
