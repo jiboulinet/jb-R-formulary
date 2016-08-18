@@ -1,26 +1,27 @@
-#Lire une base de donnée à l’écran
+#Lire une base de donnÃ©e Ã  lâ€™Ã©cran
 a<-read.table(file = "clipboard") 
 
-#Exporter des données sous format excel :
+#Exporter des donnÃ©es sous format excel :
 library(xlsReadWrite)
 write.table(myval,  "mytest.xls", sep = "\t")
 #ou
 write.table(mydata, "c:/mydata.txt", sep="\t")
 
-#Pour ouvrir un fichier, enregistrer à partir d’excel en « txt  sep tab » puis vérifier que le fichier est bien en mode ANSI.
-#Mettre la direction du fichier précédé de read.table() :
+#Pour ouvrir un fichier, enregistrer Ã  partir dâ€™excel en Â« txt  sep tab Â» puis vÃ©rifier que le fichier est bien en mode ANSI.
+#Mettre la direction du fichier prÃ©cÃ©dÃ© de read.table() :
 testhaplo<-read.table("C:/Documents and Settings/Khaled/Bureau/m0-m1-m3.txt",header=T,sep="")
 #ou encore plus simple
 test <- read.table(file.choose(), header=T)
  test<-as.data.frame(test)
 
-#La fonction header=T (pour TRUE) indique que la première ligne du fichier correspond aux noms des colonnes et sep="" indique que le séparateur utilisé est un espace ou tabulation.
-#Test de normalité
-#Vérifier normalité de données : > shapiro.test(nomdufichier$variable)
+#La fonction header=T (pour TRUE) indique que la premiÃ¨re ligne du fichier correspond aux noms des colonnes et sep="" indique que le sÃ©parateur utilisÃ© est un espace ou tabulation.
+#Test de normalitÃ©
+#VÃ©rifier normalitÃ© de donnÃ©es : > shapiro.test(nomdufichier$variable)
+
 #Ordonner une data.frame
 mdrd1<-mdrd[ order(mdrd$id,mdrd$visite) ,]
 
-#un autre plus compliqué
+#un autre plus compliquÃ©
 lss<-subset(mdata.16,evid==1|(time==0.5|time==1|time==2|time==3))
 head(lss)
 lss1<-lss[ order(lss$id,lss$time) ,]
@@ -29,13 +30,16 @@ head(lss1)
 #Arrondir un nombre
 expo1$visite<-round(expo1$visite,1)
 
-#Chercher différence, égalité entre 2 base de données
-###affiche les différences entre les 2 bases
+#nuance de gris
+gray(0:8/8 )
+
+#Chercher diffÃ©rence, Ã©galitÃ© entre 2 base de donnÃ©es
+###affiche les diffÃ©rences entre les 2 bases
 setdiff(test$id,test1$id)
-101,102,103…
+101,102,103â€¦
 ##affiche les egalites entre 2 bases
 intersect(test$id,test1$id)
-106,110,113,208,…
+106,110,113,208,â€¦
 ###si id de test = id de dataset, alors variable new=1 sinon 0
 test$new<-(test$id%in%Dataset$id)*1
 test$delai<-ifelse(is.element(test$id,Dataset$id),Dataset$delai,NA
@@ -63,14 +67,14 @@ t2<-merge_all(my.list)
 #P values test t (student)
 (1-(pt (1.96,171)))*2#1.96 est la valeur de t et n=171
 [1] 0.05162092
-#Exponentiel des coefficient, régression logistique odd ratio
+#Exponentiel des coefficient, rÃ©gression logistique odd ratio
 exp(coef(glm2))
 exp(confint(glm2,level = 0.95))
 
 #Density plot
 densityplot(~weight, test, groups = group, auto.key = TRUE, xlab = "Plant weight")
 
-#Analyse gam et pourcentage de variabilité expliquée
+#Analyse gam et pourcentage de variabilitÃ© expliquÃ©e
 Library(mgcv)
 gam1<-gam(log(nfat1) ~ PPP3R1_3, data=ns)
 > summary(gam1)
@@ -90,7 +94,7 @@ p<-na.exclude(Dataset$age)
 #tester bonferroni,hommel,holm,Hochberg
 #Attention, p=nom du dataset? mettre p$p.value
 p.adjust(p,7,method = "hochberg")#7 est le nombre de test multiple
-#ou il mets p par défaut (mieux)
+#ou il mets p par dÃ©faut (mieux)
 p.adjust.M <- p.adjust.methods
 p.adj    <- sapply(p.adjust.M, function(meth) p.adjust(p$p.value, meth))##p.value=nom du dataset
 noquote(apply(p.adj,2, format.pval, digits = 3))
@@ -133,14 +137,14 @@ aggregates(AUC0.24~specialite*cyp3a5*periode, data=spe, FUNS=FUNS)
 tapply(c10$delai,c10$cyp3a5,mean)
 
 #Box and Whisker plot
-bwplot(group ~ AUC, test, xlab = "groupe génotype")
+bwplot(group ~ AUC, test, xlab = "groupe gÃ©notype")
 
-#Coefficient de détermination (non reussi) : summary(geeglm1)$adj.r.squared ou summary(geeglm1)$r.squared. Attention, ne fonctionne pas si données manquantes.
+#Coefficient de dÃ©termination (non reussi) : summary(geeglm1)$adj.r.squared ou summary(geeglm1)$r.squared. Attention, ne fonctionne pas si donnÃ©es manquantes.
 
 Library(geepack)
 glm1<-geeglm(LDL~visite+SRL+sexe,id=id,data=miss1,corstr="unstructured")
 
-#La fonction head(nomdufichier) permet d’avoir un aperçu des 6 premières ligne de notre fichier.
+#La fonction head(nomdufichier) permet dâ€™avoir un aperÃ§u des 6 premiÃ¨res ligne de notre fichier.
 Coefficient de correlation
 plot(test$TRG,test$CHL)
 > cor(test$TRG,test$CHL, use = "complete.obs")
@@ -162,7 +166,7 @@ sample estimates:
 plot(cov$H1~cov$cpu3_2, groups=cov$ex28,col=gray(seq(0, 1, 0.8)),xlab="difference in CPU between P3 and P1", ylab="k1 parameter")
 abline(lm(cov$H1~cov$cpu3_2), col = "grey", lty="dotted", lwd=3)
 
-#Supprimer une partie d’une chaine de caractères
+#Supprimer une partie dâ€™une chaine de caractÃ¨res
 x <- "ABC"
 substring("ABC",2)#pour avoir BC
 
@@ -170,21 +174,21 @@ substring("ABC",2)#pour avoir BC
 response ~ as.factor(taille).
 
 #Ou changer dans data frame 
-spray <- as.integer(spray) ##permet de dire que c’est ordonnée ex 0,1,2,3,4
+spray <- as.integer(spray) ##permet de dire que câ€™est ordonnÃ©e ex 0,1,2,3,4
 spray <- factor(spray, labels = LETTERS[1:6])
 
 #Pour changer variable dans data.frame
 test$EPO<-ifelse(test$EPO==0,"non","oui")
 
-#Transformer des données d’une data frame en  données SNP :
+#Transformer des donnÃ©es dâ€™une data frame en  donnÃ©es SNP :
 Library(SNPassoc)
- > test<-setupSNP(miss1,20:27,sep="") puis summary(test) (attention, pour sélectionner des SNP non contiguês utiliser des « , » :  <-geno <- hla.demo[,c(17,18,21:24)]
+ > test<-setupSNP(miss1,20:27,sep="") puis summary(test) (attention, pour sÃ©lectionner des SNP non contiguÃªs utiliser des Â« , Â» :  <-geno <- hla.demo[,c(17,18,21:24)]
 
-#Rechercher association entre un phenotype et un SNP avec différents modèles génétiques :
+#Rechercher association entre un phenotype et un SNP avec diffÃ©rents modÃ¨les gÃ©nÃ©tiques :
 > association (CHL~tor2,data=test1)
 
-#Recoder un SNP dans un modèle génétique voulu :
-#Petit programme écrit par Pierre Bady (CEMAGREF Aix)
+#Recoder un SNP dans un modÃ¨le gÃ©nÃ©tique voulu :
+#Petit programme Ã©crit par Pierre Bady (CEMAGREF Aix)
 recode <- function(x,...){
    UseMethod("recode")
 }
@@ -212,37 +216,37 @@ Degrees of Freedom: 156 Total (i.e. Null);  155 Residual
 Null Deviance:       216.6 
 Residual Deviance: 215.8    AIC: 219.8
 
-#Supprimer une variable d’un data frame
+#Supprimer une variable dâ€™un data frame
 test$G_rec <- NULL
 
-#Supprimer une ligne d’un data frame
+#Supprimer une ligne dâ€™un data frame
 Dataset <- Dataset[!(rownames(Dataset) %in% c("5")),]
 
-#Supprimer une ligne dupliquée
+#Supprimer une ligne dupliquÃ©e
 tacl3<-tacl2 [! duplicated (tacl2$id),]
 
-#Pour avoir odd ratio à partir des coefficients betas
+#Pour avoir odd ratio Ã  partir des coefficients betas
 >Library(epicalc)
 >  logistic.display(test)
 
-#Résumé d’une data frame (statistiques descriptives) :
+#RÃ©sumÃ© dâ€™une data frame (statistiques descriptives) :
 >codebook(test) ou > summ(test1)
 
-#Faire un stepwise : attention aux données manquantes :
+#Faire un stepwise : attention aux donnÃ©es manquantes :
 leuco_miss<-na.exclude(leucost)
 > glm2<-glm(leuco~gen2+sexe+age+CMV+range+maj+rangempa,data=leuco_miss,family="binomial")
 > modelstep<-step(glm2,direction="both")
 direction = c("both", "backward", "forward"), 
 trace = 1, keep = NULL, steps = 1000, k = 2, ...) 
-trace=0 permet d’avoir uniquement le modele final
-#Préférer la démarche forward
+trace=0 permet dâ€™avoir uniquement le modele final
+#PrÃ©fÃ©rer la dÃ©marche forward
 k=2 => AIC 
 k=log(n) => BIC
 #Exemple :
 For AIC> step(model, data, direction, k=2, trace) # k=2 is by default
 For BIC > step(model, data, direction, k=log(nrow(data)), trace)
 
-#Comparaison de modèle emboités
+#Comparaison de modÃ¨le emboitÃ©s
 
 fm2 <- lm(ia08 ~ ia09, data = myData) 
 fm3 <- lm(ia08 ~ ia10, data = myData) 
@@ -253,16 +257,16 @@ ou
 #Test du LRT
 lrtest (model1, model2, print=TRUE)    
 
-#Changer de groupe de référence Cox ou regression logistique:
+#Changer de groupe de rÃ©fÃ©rence Cox ou regression logistique:
 cathedral$style <- relevel(cathedral$style,ref="r")
 
-#Régression cas/témoin
+#RÃ©gression cas/tÃ©moin
 clogit1 <- clogit(case ~ smoking+alcohol+strata(matset),data=VC1to1)
-#exactement égal à 
+#exactement Ã©gal Ã  
 coxph(formula = Surv(rep(1, 52), case) ~ smoking + alcohol + strata(matset), method = "exact",data=VC1to1)
 a<-coxph(formula = Surv(rep(1, 590), case) ~ haplo +age+ BMI+sexe+atcd+habitat+activite+viande+viandegrill+tabac+alcool+AINS+physique+strata(Strate), method = "exact",data=test1)
-#Sélectionner une variable sans subset
-minnfemale <- minnbreast[minnbreast$sex == “F” & !is.na(minnbreast$sex),]
+#SÃ©lectionner une variable sans subset
+minnfemale <- minnbreast[minnbreast$sex == â€œFâ€ & !is.na(minnbreast$sex),]
 #Cox model
 > tcox<-coxph(Surv(delay,loss)~haplotype+ager+aged+sexer+sexed+bpar+isch,data=test)
 > summary(tcox)
@@ -282,7 +286,7 @@ sexedM           0.1816907  1.1992432  0.5290482  0.343  0.73128
 bpar             0.9517130  2.5901429  0.4931087  1.930  0.05360 . 
 isch            -0.0001614  0.9998386  0.0006262 -0.258  0.79664   
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1 
 
                 exp(coef) exp(-coef) lower .95 upper .95
 haplotypehetero    3.3588     0.2977    0.9080    12.425
@@ -302,7 +306,7 @@ Score (logrank) test = 19.75  on 8 df,   p=0.01133
 > tcox<-coxph(Surv(delay,loss)~haplotype+ager+aged+sexer+sexed+bpar+isch,data=test_na)
 > stepw<-step(tcox,direction="both")
 
-#Tester de nombreux SNP sur un phénotype
+#Tester de nombreux SNP sur un phÃ©notype
 > ansAll<-WGassociation(protein~1,data=datSNP,model="all")
 > summary(ansAll)
  SNPs (n) Genot error (%) Monomorphic (%) Significant* (n) (%)
@@ -347,7 +351,7 @@ snp10003  -
 LD(graft1$c1236t,graft1$g2677t)
 Pairwise LD
 -----------
-                   D        D'      Corr (=r²)
+                   D        D'      Corr (=rÂ²)
 Estimates: 0.2289291 0.9390237 0.9353278
 
               X^2 P-value   N
@@ -394,9 +398,9 @@ OR et CI95% pour haplo.glm
          GTG 0.2987   1.01 (   0.52 -   1.97 )  0.9773 
    geno.rare 0.0268   0.22 (   0.05 -   0.99 )  0.0490 
 
-#Description et fréquence des haplotypes
+#Description et frÃ©quence des haplotypes
 > freqhaplom<-haplo.em(geno=geno)
-> print(freqhaplom) )#attention, il code les snp par loc1, loc2… etc et surtout 1 ou 2 : 1 correspond à la lettre la + basse dans l’alphabet et non à l’allèle sauvage !!! (ex : (1) A>G, A=1, G=2 ; (2) G>A, A=1, G=2).
+> print(freqhaplom) )#attention, il code les snp par loc1, loc2â€¦ etc et surtout 1 ou 2 : 1 correspond Ã  la lettre la + basse dans lâ€™alphabet et non Ã  lâ€™allÃ¨le sauvage !!! (ex : (1) A>G, A=1, G=2 ; (2) G>A, A=1, G=2).
 =============================================================================== 
                                   Haplotypes                                    
 =============================================================================== 
@@ -438,7 +442,7 @@ x     1   2   4
 >
 
 
-#Choix du modèle génétique pour l’analyse haplotypique (par défaut, additive)
+#Choix du modÃ¨le gÃ©nÃ©tique pour lâ€™analyse haplotypique (par dÃ©faut, additive)
 >  mod<-haplo.glm(casco~geno,data=datSNP,family="binomial",locus.label=tag.SNPs, control=haplo.glm.control(haplo.freq.min=0.05,haplo.effect="additive"))
 > mod
 
@@ -463,8 +467,8 @@ geno.rare          *        *         *   0.0268
 haplo.base         C        T         G   0.4427
 
 
-#Changer haplotype de référence
->  mod<-haplo.glm(casco~geno,data=datSNP,family="binomial",locus.label=tag.SNPs,control=haplo.glm.control(haplo.freq.min=0.05,haplo.base=4)) ##chercher haplotype dans la liste d’haplotype initiale
+#Changer haplotype de rÃ©fÃ©rence
+>  mod<-haplo.glm(casco~geno,data=datSNP,family="binomial",locus.label=tag.SNPs,control=haplo.glm.control(haplo.freq.min=0.05,haplo.base=4)) ##chercher haplotype dans la liste dâ€™haplotype initiale
 > mod
 
   Call: 
@@ -525,7 +529,7 @@ control    case
 
 
 
-#Paramètres graphiques : nuance de gris
+#ParamÃ¨tres graphiques : nuance de gris
 palette(gray(0:5 / 5))
  hist(a,col=1:4, yaxt="n")
 
@@ -555,13 +559,13 @@ haplo.power.cc(haplo, haplo.freq, base.index, haplo.beta, case.frac=.5, prevalen
 
 
 
-#Modifier selon critère une data frame
-•	Sélectionner que certaine colonnes : >test1<-test[,c('visite','age','sexe')]
-•	Sélectionner les lignes de 1 à 30>test1<-test[1:30,]
-•	Sélectionner que les visites 2 >visite2<-test[test$visit==2,]
-•	Sélectionner que les patients sous cortico >corti2<-test[test$cortico== »oui »,]
+#Modifier selon critÃ¨re une data frame
+â€¢	SÃ©lectionner que certaine colonnes : >test1<-test[,c('visite','age','sexe')]
+â€¢	SÃ©lectionner les lignes de 1 Ã  30>test1<-test[1:30,]
+â€¢	SÃ©lectionner que les visites 2 >visite2<-test[test$visit==2,]
+â€¢	SÃ©lectionner que les patients sous cortico >corti2<-test[test$cortico== Â»oui Â»,]
 
-Pour avoir une information détaillée sur un package (site internet en relation) : 
+Pour avoir une information dÃ©taillÃ©e sur un package (site internet en relation) : 
 > RSiteSearch("lme4")
 
 
@@ -593,7 +597,7 @@ test
 theta <- function(x, tab) coef(glm(AR~p17+p24, family=binomial(), data=tab[x,])) 
 results <- bootstrap(1:nrow(test), 50, theta, test)
 results1 <- bootstrap(1:nrow(test), 50, theta, test)
-Vérifier la reproductibilité:
+VÃ©rifier la reproductibilitÃ©:
 set.seed(0) 
 res1 <- bootstrap(1:nrow(test), 50, theta, test) 
 set.seed(0) 
@@ -609,7 +613,7 @@ bs <- function(formula, data, indices) {
   return(coef(fit)) }
 results <- boot(data=mtcars, statistic=bs,  R=100, formula=am~wt+disp)
 
-#Pour modèle de Cox
+#Pour modÃ¨le de Cox
 bs <- function(formula, data, indices) {
     d <- data[indices,] # allows boot to select sample 
    fit <- coxph(formula, data=d)
@@ -623,7 +627,7 @@ colnames(a)<-c("hetero","mutant")
  head(a)
 #quantile
 quantile(a$hetero,  probs = c(0.25, 0.5,0.75))
-#µ IC95%
+#Âµ IC95%
 b<-mean(a$hypo)
  c<-sd(a$hypo)
 #HR
@@ -634,11 +638,11 @@ exp( b-1.96*c)
 exp( b+1.96*c)
 
 
-#Bootstraper une base de données
+#Bootstraper une base de donnÃ©es
 test2<-replicate (10,echantillon<- sample(1:nrow(test1),nrow(test1), replace = TRUE))
 res<-test1[test2,]
 
-#Exporter des résultats
+#Exporter des rÃ©sultats
 >  write.csv2(results, file="boot.csv", dec=".",sep="")
 print.infile(test1, file="test-cov1.txt")
 #Courbes de ROC
@@ -652,14 +656,14 @@ glm1<-glm(CN1~p17+p35,binomial,test)
  lty=1:2, col=c("red","brown"), bg="white")
 > title(main="Comparison of 3 logistic regression models")
 >
-La fonction lty change les pointillés (lty1,lty2…).
+La fonction lty change les pointillÃ©s (lty1,lty2â€¦).
 
 ####Superbe  courbes
 Ou library(Epi)
 ROC( form = CNi ~p17+p35, plot="ROC" )#cf library Epi pour arguments)
 
-Variables dépendantes du temps dans Cox
-1-Copier la fonction « fold » ci-dessous
+Variables dÃ©pendantes du temps dans Cox
+1-Copier la fonction Â« fold Â» ci-dessous
 fold <- function(data, time, event, cov, 
     cov.names=paste('covariate', '.', 1:ncovs, sep=""), 
      suffix='.time', cov.times=0:ncov, common.times=TRUE, lag=0){
@@ -777,8 +781,8 @@ Likelihood ratio test= 3.19  on 3 df,   p=0.3636
 Wald test            = 2.68  on 3 df,   p=0.4433
 Score (logrank) test = 2.84  on 3 df,   p=0.4169
 
-Attention, le seul problème est qu’il faut faire une colonne par unité de temps (ex suivi de 0 à 92 mois, il faut 92 colonnes).
-Fonction reshape (transformer une data frame en données longitudinales) :
+Attention, le seul problÃ¨me est quâ€™il faut faire une colonne par unitÃ© de temps (ex suivi de 0 Ã  92 mois, il faut 92 colonnes).
+Fonction reshape (transformer une data frame en donnÃ©es longitudinales) :
 head(test)
   id vgm_m0 leuco_m0 vgm_m1 leuco_m1 vgm_m3 leuco_m3 vgm_m6 leuco_m6
 1  1   91.0     6670   88.6     6610   87.0     7560   83.6     8550
@@ -788,11 +792,11 @@ head(test)
 5  6   86.0    11580   86.0     8300   84.0     8200   83.0     7100
 6  7   87.6     6000   87.6     5690   87.6     5690   81.0     5490
 test1<-reshape(test,idvar="id",varying=list(c("vgm_m0","vgm_m1","vgm_m3","vgm_m6")),v.names="vgm",times=c("0","1","3","6"),direction="long")
-mtx1<-reshape(mtx,idvar="id",varying=list(c("c0","c1","c2","c3","c4",”c5”,”c6”),c(delai_0,delai_1,delai_2,delai_3,delai_4,delai_5,delai_6)),v.names="vgm",times=c("0","1",”2”,"3",”4”,”5”,"6"),direction="long")
+mtx1<-reshape(mtx,idvar="id",varying=list(c("c0","c1","c2","c3","c4",â€c5â€,â€c6â€),c(delai_0,delai_1,delai_2,delai_3,delai_4,delai_5,delai_6)),v.names="vgm",times=c("0","1",â€2â€,"3",â€4â€,â€5â€,"6"),direction="long")
 
-#ou plus compliqué quand plusieurs variables
+#ou plus compliquÃ© quand plusieurs variables
 reshape(test,varying=list(c("D_MMF_S2","D_MMF_S6","D_MMF_S12","D_MMF_S26","D_MMF_S52"),c("AUC_MMF_S2","AUC_MMF_S6","AUC_MMF_S12","AUC_MMF_S26","AUC_MMF_S52"),c("D_csa_S2","D_csa_S6","D_csa_S12","D_csa_S26","D_csa_S52"),c("CsA_C0_S2","CsA_C0_S6","CsA_C0_S12","CsA_C0_S26","CsA_C0_S52"),c("CsA_C2_S2","CsA_C2_S6","CsA_C2_S12","CsA_C2_S26","CsA_C2_S52")),v.names=c("D_MMF","AUC_MMF","D_csa","CsA_C0","CsA_C2"),times=c("2","6","12","26","52"),direction="long")
-##reordonner/ordonné/trier dataset
+##reordonner/ordonnÃ©/trier dataset
 > test2 <- test1[order(test1$id), ]
 > head(test2)
     id time  vgm leuco
@@ -805,11 +809,11 @@ reshape(test,varying=list(c("D_MMF_S2","D_MMF_S6","D_MMF_S12","D_MMF_S26","D_MMF
 
 
 
-#Dans l’autre sens :
-testwide<-reshape(test,v.names=c("cortico", "SRL", “chl"),idvar="id",timevar="visite",direction="wide")
+#Dans lâ€™autre sens :
+testwide<-reshape(test,v.names=c("cortico", "SRL", â€œchl"),idvar="id",timevar="visite",direction="wide")
  head(testwide) 
 
-#Exemple de modèle de Cox avec variables dépendantes du temps
+#Exemple de modÃ¨le de Cox avec variables dÃ©pendantes du temps
 
 1) Utiliser la fonction expand.breakpoints
 
@@ -904,14 +908,14 @@ temp.start[epoch],
 #Puis faire
 Attach(test)
 breakpoints <- sort(unique(time))
-#breakpoints permet de voir le nombre de classe’ qui sera utilize pour le fichier avec 
-#covariable dépendante du temps
+#breakpoints permet de voir le nombre de classeâ€™ qui sera utilize pour le fichier avec 
+#covariable dÃ©pendante du temps
 > test.exp <- expand.breakpoints(test,breakpoints,tevent="delay",status="dialyse", index="NATT", Zvar=FALSE)
 
 #Ordonner une data frame par 2 facteurs
 ciclo1 <- ciclo[order(ciclo[,1],ciclo[,2],decreasing=F),]
 
-#Si trop long, recréer une data frame avec que les fichiers que l’on veut
+#Si trop long, recrÃ©er une data frame avec que les fichiers que lâ€™on veut
 test1<-data.frame(test.exp[,1:12])
 > head(test1)
 #ou
@@ -925,14 +929,14 @@ print.infile <- function (x, file=NULL,...)    { capture.output(print(x,...), fi
  print.infile(test.exp, file="test-exp.txt")
 
 
-2) Créer dans notre fichier avec variable dependante du temps le nombre de colonne correspondante à breakpoints et remplacer les vides par NA
+2) CrÃ©er dans notre fichier avec variable dependante du temps le nombre de colonne correspondante Ã  breakpoints et remplacer les vides par NA
 Charger le fichier dans R et utiliser la fonction reshape
 
 test1<-reshape(test,idvar="id",varying=list(c("vgm_m0","vgm_m1","vgm_m3","vgm_m6")),v.names="vgm",times=c("0","1","3","6"),direction="long")
-ou plus compliqué
+ou plus compliquÃ©
 > test1<-reshape(test,idvar="NATT",varying=list(c("PAP0","PAP1","PAP2","PAP3","PAP4","PA_puls","PAP6","PAP7","PAP8","PAP9","PAP10","PAP11","PAP12","PAP13","PAP14","PAP15","PAP16","PAP17","PAP18","PAP19","PAP20","PAP21","PAP22","PAP23","PAP24","PAP25")),v.names="PAP",times=c("0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25"),direction="long")
 > test2 <- test1[order(test1$id), ]
-Si trop long, recréer une data frame avec que les fichiers que l’on veut
+Si trop long, recrÃ©er une data frame avec que les fichiers que lâ€™on veut
 > test3<-data.frame(test2$NATT,test2$time,test2$Prot)
 > test3 <- test3[order(test3$test2.NATT), ]
 > head(test3)
@@ -940,8 +944,8 @@ Si trop long, recréer une data frame avec que les fichiers que l’on veut
 > print.infile(test1, file="test-cov1.txt")
 
 3)
-Créer deux tables dans access avec le fichier 1.txt et 2.txt et les coupler par id/id et time/Tstop dans une requête
-Copier le fichier ainsi créer dans un txt et l’importer dans R puis faire tourner le modèle de Cox :
+CrÃ©er deux tables dans access avec le fichier 1.txt et 2.txt et les coupler par id/id et time/Tstop dans une requÃªte
+Copier le fichier ainsi crÃ©er dans un txt et lâ€™importer dans R puis faire tourner le modÃ¨le de Cox :
 > jb_cox <- coxph(Surv(Tstart, Tstop, death) ~age + sexe +anemia,data=test)
 > summary(jb_cox)
 >lrtest (cox1, cox2, print=TRUE)  
@@ -951,7 +955,7 @@ Puis
 > test3<-merge(test1, test2)
 Regroupe les 2 tables par attributs communs (ici NATT et Tstop)
 
-#Modèle Inférence (cf livre de Burnham et Anderson)
+#ModÃ¨le InfÃ©rence (cf livre de Burnham et Anderson)
 library(MuMIn)
 lm1<-lmer(hb~1+visite+I(visite^2)+(visite|id)+haplo_mtor_hb+SRL,data=test,REML=F)
 options(na.action = "na.fail")
@@ -962,20 +966,20 @@ dd<-dredge(lm1)
 options(na.action = "na.fail")
 top.models.2 <- get.models(dd, subset = delta < 2, method = "ML")
  top.models.2
-Modèle avec au moins 2 termes
+ModÃ¨le avec au moins 2 termes
 dd<-dredge(lm1, m.max = 2)
-Modèle avec visite forcée
+ModÃ¨le avec visite forcÃ©e
 dredge(lm1, fixed = "visite")
-Modèle averaging (fait la moyenne des coefficients entre les meilleurs modèles)
+ModÃ¨le averaging (fait la moyenne des coefficients entre les meilleurs modÃ¨les)
 model.avg(get.models(dd, subset = delta < 4)) # get averaged coefficients
  
-Classer les modèles selon le BIC
+Classer les modÃ¨les selon le BIC
 BIC <- function(x) AIC(x, k=log(length(residuals(x))))
 > mav <- model.avg(top.models, rank=BIC)
  
 
-#Exemple de modèle joint
-Attention, il faut qu’il n y ait aucune valeur manquante dans la variable expliquée ou les covariables pour fitter le lme
+#Exemple de modÃ¨le joint
+Attention, il faut quâ€™il n y ait aucune valeur manquante dans la variable expliquÃ©e ou les covariables pour fitter le lme
 lmeFit <- lme(sqrt(CD4) ~ obstime * drug, random = ~ obstime | patient, data = aids)
 coxFit <- coxph(Surv(Time, death) ~ drug, data = aids.id, x = TRUE)
 fitJOINT <- jointModel(fitLME, fitCOX,timeVar = "obstime", method = "spline-PH-GH")
@@ -988,7 +992,7 @@ par(mfrow = c(2, 2))
 plot(fitJOINT)
 
 
-#Faire une courbe de ROC et déterminer le seuil
+#Faire une courbe de ROC et dÃ©terminer le seuil
 
 library(pROC)
 roc(aSAH$outcome, aSAH$s100b, plot=TRUE,print.thres=T)
@@ -1005,7 +1009,7 @@ coords(rocobj, "b", ret="t")
 
 
 
-#Modèle de cox avec variables dépendantes du temps : method Survsplit
+#ModÃ¨le de cox avec variables dÃ©pendantes du temps : method Survsplit
 
 head(test)
   id haplotype cyp3A5 rejet_aigu event delai_event csa1 csa2 csa3 csa4 csa0
@@ -1064,14 +1068,14 @@ test1$csa<-ifelse(test1$delai_event<=1,test1$csa1,NA)
 
 
 #Version plus moderne : package risksetROC
-#Permet de prédire l’influence d’un marqueur à une valeur initiale sur la survie à une ou plusieurs valeur de cutoff (par exemple survie à 1 an).
-#Permet de prédire l’évolution de l’AUC ROC d’un marqueur en fonction du temps
+#Permet de prÃ©dire lâ€™influence dâ€™un marqueur Ã  une valeur initiale sur la survie Ã  une ou plusieurs valeur de cutoff (par exemple survie Ã  1 an).
+#Permet de prÃ©dire lâ€™Ã©volution de lâ€™AUC ROC dâ€™un marqueur en fonction du temps
 
 
 library(risksetROC)
  
 
-Evolution de l’AUC ROC au cours du temps
+Evolution de lâ€™AUC ROC au cours du temps
 library(MASS)
  data(VA)
 head(VA)
@@ -1103,7 +1107,7 @@ Arguments
 -utimes ordered unique failure times
 -St estimated survival probability at utimes
 -AUC Area under ROC curve at utimes
--Cindex Cindex (équivalent de l’AUC cf test d’adéquation de Homer Lemeshow)
+-Cindex Cindex (Ã©quivalent de lâ€™AUC cf test dâ€™adÃ©quation de Homer Lemeshow)
 
 AUC.CC
 $utimes
@@ -1151,7 +1155,7 @@ $Cindex
 [1] 0.7032137
 
 #
-#Pour avoir la courbe de ROC du marqueur à un temps donné
+#Pour avoir la courbe de ROC du marqueur Ã  un temps donnÃ©
 
 library(MASS)
  data(VA)
@@ -1234,7 +1238,7 @@ $AUC
 [1] 0.7097247
 
 
-#bootStepAIC bootstrap basé sur l’AIC
+#bootStepAIC bootstrap basÃ© sur lâ€™AIC
 
 library(bootStepAIC)
 glmFit1 <- glm(y1 ~ x1 + x2 + x3 + x4 + x5, family = binomial, data = data)
@@ -1249,31 +1253,31 @@ direction the direction argument of stepAIC().
 k the k argument of stepAIC().
 verbose logical; if TRUE information about the evolution of the procedure is printed in the screen.
 
-Basé sur le BIC
+BasÃ© sur le BIC
 boot.stepAIC(glm1, test1, B = 50, k=log(nrow(test1)))
 
 
-#Formation R jb 6 et 7 décembre 2012
+#Formation R jb 6 et 7 dÃ©cembre 2012
 
-#Chaînes de caractères
+#ChaÃ®nes de caractÃ¨res
 
-#Extraire une partie d’un objet (ex garder que les patients ayant tls dans le nom)
-grep(‘ tls’,test)
+#Extraire une partie dâ€™un objet (ex garder que les patients ayant tls dans le nom)
+grep(â€˜ tlsâ€™,test)
 
 #Extraire les patients qui contiennent T
-test[grep(« T »,rownames(test)),]
+test[grep(Â« T Â»,rownames(test)),]
 #Extraire les patients qui commencent par T
-test[grep(« ^T »,rownames(test)),]
+test[grep(Â« ^T Â»,rownames(test)),]
 
-#Remplacer tlse par toulouse dans l’id
-sub(« tlse », »toulouse »,test$id)
+#Remplacer tlse par toulouse dans lâ€™id
+sub(Â« tlse Â», Â»toulouse Â»,test$id)
 adv$periode<-sub("7j","j7",adv$periode)
  
 #Operations ensemblistes
-intersect(A,B) ## elements communs à A et B
-setdiff(A,B) ## ce qui diffèe entre A et B
+intersect(A,B) ## elements communs Ã  A et B
+setdiff(A,B) ## ce qui diffÃ¨e entre A et B
 is.element(2,A)## est ce que 2 est contenu dans A
-id[id==tls38]## à quel position id est = tls38
+id[id==tls38]## Ã  quel position id est = tls38
 Diagramme de VENN
 A<-1:10
 B<-c(3:6,12,15,18)
@@ -1282,8 +1286,8 @@ library(gplots)
 venn(test)
 
 #Date et temps
-#Transformer des caractères ou nombres en date ?strptime
-#ex date début perf mtx
+#Transformer des caractÃ¨res ou nombres en date ?strptime
+#ex date dÃ©but perf mtx
 debut<-"06/12/2012 10:30:00"
  debut<-strptime(debut,"%d/%m/%Y %H:%M:%S")
  debut+30*3600
@@ -1292,33 +1296,33 @@ debut<-"06/12/2012 10:30:00"
 Sys.time()
 [1] "2012-12-09 14:48:31 CET"
 
-##dans combien de temps 31 décembre 2012
+##dans combien de temps 31 dÃ©cembre 2012
 > ajourdhui<-Sys.Date()
 > as.Date("2012-12-31")-ajourdhui
 Time difference of 22 days
 
-#by ou tapply appliquer une fonction à la 1ere colonne par modalité du facteur
+#by ou tapply appliquer une fonction Ã  la 1ere colonne par modalitÃ© du facteur
 tapply(iris[,1],iris[,5],mean)
-names(result)##renvoi des éléments que l’on peut sélectionner après
-lapply##pour les listes, permet d’avoir des vecteurs de longueur différente
-apply#applique une commande à chaque lignes ou colonnes
+names(result)##renvoi des Ã©lÃ©ments que lâ€™on peut sÃ©lectionner aprÃ¨s
+lapply##pour les listes, permet dâ€™avoir des vecteurs de longueur diffÃ©rente
+apply#applique une commande Ã  chaque lignes ou colonnes
 
 sapply(seq_len(ncol(a)),function(i) hist(a[,i],main=colnames(a)[i],xlab="x"))
 
 #Graphiques
 
-on crée un matrice avec le nombre de graphes dans la feuille que l’on désire
-mat<-matrix(c(2,0,1,3),2,2,byrow=T)##on crée un matrice pour 3 shema avec 2 lignes et 2 col
-nf<-layout(mat,c(3,1),c(1 :3),T)##1er vecteur gère largeur et 2eme hauteur ici 3 X/1X
+on crÃ©e un matrice avec le nombre de graphes dans la feuille que lâ€™on dÃ©sire
+mat<-matrix(c(2,0,1,3),2,2,byrow=T)##on crÃ©e un matrice pour 3 shema avec 2 lignes et 2 col
+nf<-layout(mat,c(3,1),c(1 :3),T)##1er vecteur gÃ¨re largeur et 2eme hauteur ici 3 X/1X
 layout.show(nf)
-puis les 3 plots à la suite
-Pour gérer les marges, titres etc… : par()
+puis les 3 plots Ã  la suite
+Pour gÃ©rer les marges, titres etcâ€¦ : par()
 
 #Remplacer une valeur par une autre dans un data.frame
 test[3,2]=12
-test[test$fac== ‘A’,3]= ‘D’## remplace ds 3eme col ds la variable fac tous les A par des D
+test[test$fac== â€˜Aâ€™,3]= â€˜Dâ€™## remplace ds 3eme col ds la variable fac tous les A par des D
 
-#Renommer des colonnes d’un data.frame
+#Renommer des colonnes dâ€™un data.frame
 colnames(test1)<-c("ID","OUT","TIME")
 
 #une seule colonne
@@ -1348,7 +1352,7 @@ by(Indometh, Indometh$Subject,function(x) range(x$conc,na.rm=T)
 ou
 #tapply(Indometh$conc,Indometh$time,median)
 
-#Regression non linéaire et courbe de régression
+#Regression non linÃ©aire et courbe de rÃ©gression
 data(Indometh)
 re<-nls(conc~a*exp(-b*time),data=Indometh,start=list(a=3,b=0.16))
 re1<-nls(conc~a*exp(-b*time)+c*exp(-d*time),data=Indometh,start=list(a=3,b=0.16,c=0.3,d=0.05))
@@ -1382,7 +1386,7 @@ legend("topright",lwd=c(1,3),lty=c(2,1),legend=c("individual","Median"))
 
 
 
-#Régression logistique polytomique
+#RÃ©gression logistique polytomique
 m<-plr(ah~peptides, data=ah, hess=T)
 m<-polr(ah.ord ~ p28054,data=test4,hess=T)
 summary(m)
@@ -1409,14 +1413,14 @@ anova(m)
 st <- step(m)
 plot(st)
 
-test effet aléatoire
+test effet alÃ©atoire
 rand(m)
 
-#Courbes incidence cumulées
+#Courbes incidence cumulÃ©es
 library(cmprsk)
 attach(cox1)
 print(xx <- cuminc(ftime=delai, fstatus=rejet_1R, group=bin_40))
-plot(xx,lty=1,color=c(“blue”,”red”), main=" ", curvlab=c(“mpa<40”,”mpa >40”), ylim=c(0, 1), xlim=c(0,300),
+plot(xx,lty=1,color=c(â€œblueâ€,â€redâ€), main=" ", curvlab=c(â€œmpa<40â€,â€mpa >40â€), ylim=c(0, 1), xlim=c(0,300),
 xlab="Years", ylab="Probability", lty=1:length(x))
 print(xx)#p value
 
@@ -1445,17 +1449,17 @@ res.SeSpPPVNPV.roc <- SeSpPPVNPV(cutpoint=22, T=cox1$delai,delta=cox1$rejet_1R,m
 
 res.SeSpPPVNPV.roc
 
-Sélectionner que les valeurs >0 dans un tapply
+SÃ©lectionner que les valeurs >0 dans un tapply
 
 tapply(mdata$out[mdata$out>=0],mdata$id[mdata$out>=0],mean,na.rm=T)
 #[ ] transforme la colonne du df en vecteur
 
 
-#Description détaillée
+#Description dÃ©taillÃ©e
 library(psych)
 describe(mdata)
 
-#Présentation sous forme de tableau des résultats/broom
+#PrÃ©sentation sous forme de tableau des rÃ©sultats/broom
 library(broom)
 
 cox1 <- coxph(Surv(debut, fin,event_tox2)~ age +cluster(nom), data=evr)
