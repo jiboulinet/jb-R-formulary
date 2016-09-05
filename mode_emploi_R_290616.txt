@@ -75,9 +75,12 @@ exp(confint(glm2,level = 0.95))
 densityplot(~weight, test, groups = group, auto.key = TRUE, xlab = "Plant weight")
 
 #Analyse gam et pourcentage de variabilité expliquée
-Library(mgcv)
+library(mgcv)
 gam1<-gam(log(nfat1) ~ PPP3R1_3, data=ns)
-> summary(gam1)
+summary(gam1)
+gam2<-gam(log(nfat1) ~ s(PPP3R1_3), data=ns)
+summary(gam2)
+anova(gam1,gam2, test="Chisq")
 
 #Correction des p-values
 srl_c0	visit	intercept	steroids	sexe	haplo	 delay	age
