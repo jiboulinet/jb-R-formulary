@@ -30,6 +30,13 @@ head(lss1)
 #Arrondir un nombre
 expo1$visite<-round(expo1$visite,1)
 
+##data splitting
+library(caret)
+prot.t1$random<-seq(from=1  ,to=nrow(prot.t1))
+inTrain <- createDataPartition(y=prot.t1$random, p=0.75, list=F)#
+development <- prot.t1[ prot.t1$random%in%inTrain,]
+validation  <- prot.t1[ !prot.t1$random%in%inTrain,]
+
 #nuance de gris
 gray(0:8/8 )
 
