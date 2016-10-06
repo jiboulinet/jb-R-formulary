@@ -652,6 +652,12 @@ exp( b+1.96*c)
 test2<-replicate (10,echantillon<- sample(1:nrow(test1),nrow(test1), replace = TRUE))
 res<-test1[test2,]
 
+##bootstrap avec caret
+library(caret)
+bs<-createResample(y=prot.t1$random, times = 10, list = TRUE)
+bs1 <- prot.t1[ prot.t1$random%in%bs$Resample01,]
+bs2 <- prot.t1[ prot.t1$random%in%bs$Resample02,]
+
 #Exporter des résultats
 >  write.csv2(results, file="boot.csv", dec=".",sep="")
 print.infile(test1, file="test-cov1.txt")
