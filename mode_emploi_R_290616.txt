@@ -1494,3 +1494,5 @@ fin$ci_bas<-exp(fin$conf.low)
 fin$ci_haut<-exp(fin$conf.high)
 write.csv2(fin, file="tableau_univ_tox2_marine_110416.csv")
 
+#supprimer ligne contenant NA pour une colonne particulière
+evr1<-evr[complete.cases(evr[,37]),]
