@@ -1496,3 +1496,20 @@ write.csv2(fin, file="tableau_univ_tox2_marine_110416.csv")
 
 #supprimer ligne contenant NA pour une colonne particulière
 evr1<-evr[complete.cases(evr[,37]),]
+
+###courbes de Kaplan Meier/courbe de survie ggplot2
+library(survival)
+library(GGally)
+data(lung, package = "survival")
+sf.lung <- survival::survfit(Surv(time, status) ~ 1, data = lung)
+ggsurv(sf.lung)
+library(ggplot2)
+sf.sex <- survival::survfit(Surv(time, status) ~ sex, data = lung)
+pl.sex <- ggsurv(sf.sex)
+pl.sex
+sf.kid <- survival::survfit(Surv(time, status) ~ groupe, data = lung)
+pl.kid <- ggsurv(sf.kid, plot.cens = T)
+# Zoom in to first 80 days
+pl.kid + ggplot2::coord_cartesian(xlim = c(0, 30), ylim = c(0, 1))
+pl.kid
+
