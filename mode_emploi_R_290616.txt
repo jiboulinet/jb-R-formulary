@@ -1288,7 +1288,9 @@ test[grep(« ^T »,rownames(test)),]
 
 #Remplacer tlse par toulouse dans l’id
 sub(« tlse », »toulouse »,test$id)
+#sub ne remplace que le 1er caractère
 adv$periode<-sub("7j","j7",adv$periode)
+phase3$id<-gsub("\\.","-",phase3$id)
  
 #Operations ensemblistes
 intersect(A,B) ## elements communs à A et B
