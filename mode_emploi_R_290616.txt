@@ -1548,39 +1548,3 @@ plot(AUC_trap,biais_rel_non, xlab = "AUC trapezoidal rule", ylab
 ="Relative biais NONMEM", type = "p", col = "black", pch = 1)
 b<-quantile(biais_rel_non,probs=c(0.05,.5,.95))
 abline(h =b, col = "grey", lty = "dotted")
-
-
-
-Script courbe d’incidences cumulées pour évènements répétés
-test$bin50<-ifelse(test$auc_mpa>=50,"haut","bas")
-test$bin50<-as.factor(test$bin50)
-
-library(cmprsk)
-delai=test$stop#temps
-rejet=test$rejet#evenement
-bin50=test$bin50#groupes
-print(xx <- cuminc(ftime=delai, fstatus=rejet_1R, group=bin50))
-attach(test)
-plot(xx,color=c("#404040","#808080"), main="", curvlab=c("MPA low","MPA high"), ylim=c(0, 1), xlim=c(0,300), xlab="Time (Years)", ylab="Cumulated incidence of rejection", lty=1:length(xx),lwd=3)
-
-
-
-for (i in 47:60){
-paste(("id="),i)
-i<-ifelse(test1$auc_mpa>=i,"haut","bas")
-i<-as.factor(i)
-print(xx <- cuminc(ftime=delai, fstatus=rejet_1R, group=i))
-}
-
-roct<-timeROC(T=test1$delai,delta=test1$rejet_1R,marker=-test1$auc_mpa,cause=1,weighting="marginal",times=c(1:350,50),ROC=TRUE)
-plotAUCcurve(roct)
-
-res.SeSpPPVNPV.roc <- SeSpPPVNPV(cutpoint=50, T=test1$delai,delta=test1$rejet_1R,marker=test1$auc_mpa, cause=1,weighting="marginal", times=c(1:350,50))
-
-res.SeSpPPVNPV.roc
-
- coxfit1 <- coxph(Surv(start, stop,rejet_1R)~auc_cni2+bin50, data=test)
-summary(coxfit1)
-
-#Evolution de l’AUC ROC au cours du temps
-library(risksetROC)
