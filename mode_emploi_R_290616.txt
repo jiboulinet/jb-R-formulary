@@ -678,124 +678,7 @@ La fonction lty change les pointillés (lty1,lty2…).
 Ou library(Epi)
 ROC( form = CNi ~p17+p35, plot="ROC" )#cf library Epi pour arguments)
 
-Variables dépendantes du temps dans Cox
-1-Copier la fonction « fold » ci-dessous
-fold <- function(data, time, event, cov, 
-    cov.names=paste('covariate', '.', 1:ncovs, sep=""), 
-     suffix='.time', cov.times=0:ncov, common.times=TRUE, lag=0){
-  vlag <- function(x, lag) c(rep(NA, lag), x[1:(length(x)-lag)])
-     xlag <- function(x, lag) apply(as.matrix(x), 2, vlag, lag=lag)
-     all.cov <- unlist(cov)
-     if (!is.list(cov)) cov <- list(cov)
-     ncovs <- length(cov)
-     nrow <- nrow(data)
-     ncol <- ncol(data)
-     ncov <- length(cov[[1]])
-     nobs <- nrow*ncov
-     if (length(unique(c(sapply(cov, length), length(cov.times)-1))) > 1)
-         stop(paste(
-             "all elements of cov must be of the same length and \n",
-             "cov.times must have one more entry than each element of cov."))
-     var.names <- names(data)
-     subjects <- rownames(data)
-     omit.cols <- if (!common.times) c(all.cov, cov.times) else all.cov
-     keep.cols <- (1:ncol)[-omit.cols]
-     nkeep <- length(keep.cols)
-     if (is.numeric(event)) event <- var.names[event]
-     times <- if (common.times) matrix(cov.times, nrow, ncov+1, byrow=T)
-         else data[, cov.times]
-     new.data <- matrix(Inf, nobs, 3 + ncovs + nkeep)
-     rownames <- rep("", nobs)
-     colnames(new.data) <- c('start', 'stop', paste(event, suffix, sep=""), 
-         var.names[-omit.cols], cov.names)
-     end.row <- 0
-     for (i in 1:nrow){
-         start.row <- end.row + 1
-         end.row <- end.row + ncov
-         start <- times[i, 1:ncov]
-         stop <- times[i, 2:(ncov+1)]
-         event.time <- ifelse (stop == data[i, time] & data[i, event] == 1, 1, 0)
-         keep <- matrix(unlist(data[i, -omit.cols]), ncov, nkeep, byrow=T)
-         select <- apply(matrix(!is.na(data[i, all.cov]), ncol=ncovs), 1, all)
-         rows <- start.row:end.row
-         cov.mat <- xlag(matrix(unlist(data[i, all.cov]), nrow=length(rows)), lag)
-         new.data[rows[select], ] <- 
-             cbind(start, stop, event.time, keep, cov.mat)[select,]
-         rownames[rows] <- paste(subjects[i], '.', seq(along=rows), sep="")
-         }
-     row.names(new.data) <- rownames
-     as.data.frame(new.data[new.data[, 1] != Inf & 
-         apply(as.matrix(!is.na(new.data[, cov.names])), 1, all), ])
-     }
 
-Arguments of fold:
-##  data: A data frame or numeric matrix (with column names) to be `unfolded.' 
-##      For reasons of efficiency, if there are factors in data these will be 
-##      converted to numeric variables in the output data frame.
-##  time: The quoted name of the event/censoring-time variable in data.
-##  event: The quoted name of the event/censoring-indicator variable in data.
-##  cov: A vector giving the column numbers of the time-dependent covariate 
-##      in data, or a list of vectors if there is more than one time-varying 
-##      covariates.
-##  cov.names: A character string or character vector giving the name or names 
-##      to be assigned to the time-dependent covariate(s) in the output data set.
-##  suffix: The suffix to be attached to the name of the time-to-event variable 
-##      in the output data setl defaults to '.time'.
-##  cov.times: The observation times for the covariate values, including the start 
-##      time. This argument can take several forms: 
-##      *   The default is integers from 0 to the number of covariate values (i.e., 
-##              one more than the length of each vector in cov).
-##      *   An arbitrary numerical vector with one more entry than the length of each 
-##      *       vector in cov.
-##      *   The columns in the input data set that give the observations times for each
-##              individual. There should be one more column than the length of each 
-##              vector in cov.
-##      *   common.times: A logical value indicating whether the times of observation 
-##              are the name for all individuals; defaults to TRUE.
-##      *   lag: Number of observation periods to lag each value of the time-varying 
-##              covariate(s); defaults to 0.
-
-Exemple : 
-head(test)
-  id   m6  m12  m24  m36 event delay age sexe 
-1  1 13.2 13.1 12.5 11.9      0    92  53    F   
-2  2 12.4 13.3 11.7   NA      1     1  36    M   
-3  3 14.7 14.2   NA 12.8      0    92  55    M   
-4  5 12.7   NA 10.9 11.4      0    56  18    M   
-5  6 14.5 15.6 14.3 13.7      0    92  37    M   
-6  7 11.5 10.9 12.0 12.1      0    92  56    M   
-
-test.2 <- fold(test, time="delay",event="cutane", cov=2:5, cov.names="anemia")
-> head(test.2)
-    start stop cutane.time id cutane delay age sexe hb
-1.1     0    1           0  1      0    92  53    1   13.2
-1.2     1    2           0  1      0    92  53    1   13.1
-1.3     2    3           0  1      0    92  53    1     12.5
-1.4     3    4           0  1      0    92  53    1   11.9
-2.1     0    1           1  2      1     1  36    2   12.4
-2.2     1    2           0  2      1     1  36    13.3
-> jb_cox.2 <- coxph(Surv(start, stop, cutane.time) ~age + sexe +anemia,data=test.2)
-> summary(jb_cox.2)
-Call:
-coxph(formula = Surv(start, stop, cutane.time) ~ age + sexe + 
-    anemia, data = test.2)
-
-  n=394 (4 observations deleted due to missingness)
-
-            coef exp(coef)  se(coef)      z Pr(>|z|)
-age    -0.003359  0.996647  0.013820 -0.243    0.808
-sexe    0.901402  2.463053  0.553949  1.627    0.104
-anemia -0.049021  0.952161  0.131416 -0.373    0.709
-
-       exp(coef) exp(-coef) lower .95 upper .95
-age       0.9966      1.003    0.9700     1.024
-sexe      2.4631      0.406    0.8317     7.295
-anemia    0.9522      1.050    0.7360     1.232
-
-Rsquare= 0.008   (max possible= 0.439 )
-Likelihood ratio test= 3.19  on 3 df,   p=0.3636
-Wald test            = 2.68  on 3 df,   p=0.4433
-Score (logrank) test = 2.84  on 3 df,   p=0.4169
 
 Attention, le seul problème est qu’il faut faire une colonne par unité de temps (ex suivi de 0 à 92 mois, il faut 92 colonnes).
 Fonction reshape (transformer une data frame en données longitudinales) :
@@ -829,147 +712,7 @@ reshape(test,varying=list(c("D_MMF_S2","D_MMF_S6","D_MMF_S12","D_MMF_S26","D_MMF
 testwide<-reshape(test,v.names=c("cortico", "SRL", “chl"),idvar="id",timevar="visite",direction="wide")
  head(testwide) 
 
-#Exemple de modèle de Cox avec variables dépendantes du temps
 
-1) Utiliser la fonction expand.breakpoints
-
-
-
-expand.breakpoints <-
-function(dataset, index = "patnum", status = "status", tevent = "time", 
-       Zvar = F, breakpoints = NULL)
-{
-# Expand <dataset> so that each individual has a row for each 
-# unique failure time that is <= his/her/its own failure time.
-#
-# Original version written by Kathy Russell, for
-# Kenneth Hess, Department of Biomathematics, 
-# University of Texas M. D. Anderson Cancer Centre.
-#
-# Substantially modified by JHM, Nov 23, 1998.
-#
-# ERROR checking
-        onceonly <- paste("must be a character string matching exactly", 
-                "one name in the first parameter, dataset")     
-        # Require dataset to be of type data.frame
-        if((missing(dataset) || !is.data.frame(dataset)))
-                stop("\n   Parameter, dataset, must be a data frame")
-        varset <- names(dataset)
-        covset <- varset
-        lvset <- 1:length(varset)       # Require dataset to have unique names
-        if(any(duplicated(varset))) {
-                stop(paste("\n Parameter, dataset, must have uniquely defined", 
-                        "column  names"))
-        }
-# Require index to match exactly 1 dataset name
-        if(length((indexloc <- lvset[varset == index])) != 1)
-                stop(paste("\n   Parameter, index,", onceonly))
-        covset <- covset[covset != index]       
-        # Require status to match exactly 1 dataset name
-        if(length((statusloc <- lvset[varset == status])) != 1)
-                stop(paste("\n   Parameter, status,", onceonly))
-        covset <- covset[covset != status]      
-        # Require tevent to match exactly 1 dataset name
-        if(length((teventloc <- lvset[varset == tevent])) != 1)
-                stop(paste("\n   Parameter, tevent,", onceonly))
-        covset <- covset[covset != tevent]      # -----------------------------
-# Form vector of breakpoints, if necessary
-        if(is.null(breakpoints)) {
-                times <- dataset[, tevent]
-                breakpoints <- sort(unique(times[dataset[, status] == 1]))
-        }
-# Require breakpoints to be a vector of length >= 1
-        if((is.null(breakpoints)) || (!(is.numeric(
-             breakpoints))) || (!(is.vector(
-                breakpoints))) || (length(breakpoints) < 1)) stop(paste(
-                        "\n  Parameter, breakpoints, must be a numeric vector", 
-                        "with at least 1 element"))     #*****************
-#Begin
-#*****************
-        n <- nrow(dataset)
-        temp.stop <- c(breakpoints, 0)  # The 0 is a place-filler
-        if(breakpoints[1] > 0)
-                temp.start <- c(0, breakpoints)
-        else temp.start <- c(-1, breakpoints)
-        n.break <- length(breakpoints) + 1
-        t.event <- dataset[, tevent]    # ---------------------------
-## Begin calculate n.epochs
-        n.epochs <- sapply(1:n, function(m, breaks, times)
-        sum(breaks < times[m]) + 1, breaks = breakpoints, times = t.event)      
-        # End n.epochs
-        id <- rep(1:n, n.epochs)        # Index into supplied dataset
-        last.epoch <- cumsum(n.epochs)
-        epoch <- unlist(sapply(n.epochs, function(x)
-        1:x))   # Index into vectors of interval start & stop points
-        if(Zvar) {
-                Zmat <- diag(rep(1, n.break))[epoch,  ]
-                Z.name <- paste("Z", seq(1, n.break), sep = "")
-        }
-        Tstop <- temp.stop[epoch]
-        Tstop[last.epoch] <- dataset[, tevent]
-        status2 <- rep(0, length(epoch))
-        status2[last.epoch] <- dataset[, status]
-        new.dataset <- data.frame(dataset[id, index, drop = F], 
-temp.start[epoch], 
-                Tstop, status2, epoch, dataset[id, covset, drop = F])
-        if(Zvar)
-                new.dataset <- data.frame(new.dataset, Zmat)
-        nam <- c(index, "Tstart", "Tstop", status, "epoch", covset)
-        if(Zvar)
-                nam <- c(nam, Z.name)
-        dimnames(new.dataset) <- list(1:length(epoch), nam)
-        return(new.dataset)
-}
-
-#Puis faire
-Attach(test)
-breakpoints <- sort(unique(time))
-#breakpoints permet de voir le nombre de classe’ qui sera utilize pour le fichier avec 
-#covariable dépendante du temps
-> test.exp <- expand.breakpoints(test,breakpoints,tevent="delay",status="dialyse", index="NATT", Zvar=FALSE)
-
-#Ordonner une data frame par 2 facteurs
-ciclo1 <- ciclo[order(ciclo[,1],ciclo[,2],decreasing=F),]
-
-#Si trop long, recréer une data frame avec que les fichiers que l’on veut
-test1<-data.frame(test.exp[,1:12])
-> head(test1)
-#ou
-> test3<-data.frame(test2$NATT,test2$time,test2$Prot)
-> test3 <- test3[order(test3$test2.NATT), ]
-
-> head(test3)
-
-#Puis sauver en txt :
-print.infile <- function (x, file=NULL,...)    { capture.output(print(x,...), file=file)  }
- print.infile(test.exp, file="test-exp.txt")
-
-
-2) Créer dans notre fichier avec variable dependante du temps le nombre de colonne correspondante à breakpoints et remplacer les vides par NA
-Charger le fichier dans R et utiliser la fonction reshape
-
-test1<-reshape(test,idvar="id",varying=list(c("vgm_m0","vgm_m1","vgm_m3","vgm_m6")),v.names="vgm",times=c("0","1","3","6"),direction="long")
-ou plus compliqué
-> test1<-reshape(test,idvar="NATT",varying=list(c("PAP0","PAP1","PAP2","PAP3","PAP4","PA_puls","PAP6","PAP7","PAP8","PAP9","PAP10","PAP11","PAP12","PAP13","PAP14","PAP15","PAP16","PAP17","PAP18","PAP19","PAP20","PAP21","PAP22","PAP23","PAP24","PAP25")),v.names="PAP",times=c("0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25"),direction="long")
-> test2 <- test1[order(test1$id), ]
-Si trop long, recréer une data frame avec que les fichiers que l’on veut
-> test3<-data.frame(test2$NATT,test2$time,test2$Prot)
-> test3 <- test3[order(test3$test2.NATT), ]
-> head(test3)
-
-> print.infile(test1, file="test-cov1.txt")
-
-3)
-Créer deux tables dans access avec le fichier 1.txt et 2.txt et les coupler par id/id et time/Tstop dans une requête
-Copier le fichier ainsi créer dans un txt et l’importer dans R puis faire tourner le modèle de Cox :
-> jb_cox <- coxph(Surv(Tstart, Tstop, death) ~age + sexe +anemia,data=test)
-> summary(jb_cox)
->lrtest (cox1, cox2, print=TRUE)  
-
-
-Puis
-> test3<-merge(test1, test2)
-Regroupe les 2 tables par attributs communs (ici NATT et Tstop)
 
 #Modèle Inférence (cf livre de Burnham et Anderson)
 library(MuMIn)
@@ -1253,6 +996,24 @@ $FP
 
 $AUC
 [1] 0.7097247
+
+#Evolution de l’AUC ROC au cours du temps
+library(risksetROC)
+
+survival.time=neurotox1$delai
+survival.status=neurotox1$tpat
+score <- neurotox1$C0
+
+fit0 <- coxph( Surv(survival.time,survival.status)
+               ~ score , na.action=na.omit )
+eta <- fit0$linear.predictor
+tmax=500
+AUC.CC=risksetAUC(Stime=survival.time,
+                  status=survival.status, marker=eta, method="Cox", tmax=500)
+
+courbe ROC à j100
+ROC.CC100=risksetROC(Stime=survival.time, status=survival.status,marker=eta, predict.time=100, method="Cox", main="ROC Curve", lty=2, col="red")
+ROC.CC100
 
 
 #bootStepAIC bootstrap basé sur l’AIC
