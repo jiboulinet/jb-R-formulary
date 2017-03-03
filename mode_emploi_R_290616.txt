@@ -1515,3 +1515,72 @@ pl.kid <- ggsurv(sf.kid, plot.cens = T)
 pl.kid + ggplot2::coord_cartesian(xlim = c(0, 30), ylim = c(0, 1))
 pl.kid
 
+Script Bland altman
+head(Dataset)
+  AUC_trap AUC_its biais_rel_its AUC_pmetrics biais_rel_pmet AUC_nonmem
+1   4.8843  4.9122   0.005712180      4.87872   -0.001142436     4.7949
+2   7.2716  7.2137  -0.007962484      6.90389   -0.050567963     7.0270
+3   5.7359  5.1219  -0.107045102      4.99157   -0.129766907     5.0141
+4   3.4155  3.3172  -0.028780559      3.26050   -0.045381350     3.2916
+5   3.8028  4.1444   0.089828547      4.25927    0.120035237     4.0925
+6   2.4601  2.8716   0.167269623      3.11776    0.267330596     3.3949
+  biais_rel_non
+1   -0.01830354
+2   -0.03363771
+3   -0.12583901
+4   -0.03627580
+5    0.07618071
+6    0.37998455
+
+par( mfrow=c(3,1) )
+
+plot(AUC_trap,biais_rel_its, xlab = "AUC trapezoidal rule", ylab  
+="Relative biais its", type = "p", col = "black", pch = 1)
+b<-quantile(biais_rel_its,probs=c(0.05,.5,.95))
+abline(h =b, col = "grey", lty = "dotted")
+
+plot(AUC_trap,biais_rel_pmet, xlab = "AUC trapezoidal rule", ylab  
+="Relative biais Pmetrics", type = "p", col = "black", pch = 1)
+b<-quantile(biais_rel_pmet,probs=c(0.05,.5,.95))
+abline(h =b, col = "grey", lty = "dotted")
+
+plot(AUC_trap,biais_rel_non, xlab = "AUC trapezoidal rule", ylab  
+="Relative biais NONMEM", type = "p", col = "black", pch = 1)
+b<-quantile(biais_rel_non,probs=c(0.05,.5,.95))
+abline(h =b, col = "grey", lty = "dotted")
+
+
+
+Script courbe d’incidences cumulées pour évènements répétés
+test$bin50<-ifelse(test$auc_mpa>=50,"haut","bas")
+test$bin50<-as.factor(test$bin50)
+
+library(cmprsk)
+delai=test$stop#temps
+rejet=test$rejet#evenement
+bin50=test$bin50#groupes
+print(xx <- cuminc(ftime=delai, fstatus=rejet_1R, group=bin50))
+attach(test)
+plot(xx,color=c("#404040","#808080"), main="", curvlab=c("MPA low","MPA high"), ylim=c(0, 1), xlim=c(0,300), xlab="Time (Years)", ylab="Cumulated incidence of rejection", lty=1:length(xx),lwd=3)
+
+
+
+for (i in 47:60){
+paste(("id="),i)
+i<-ifelse(test1$auc_mpa>=i,"haut","bas")
+i<-as.factor(i)
+print(xx <- cuminc(ftime=delai, fstatus=rejet_1R, group=i))
+}
+
+roct<-timeROC(T=test1$delai,delta=test1$rejet_1R,marker=-test1$auc_mpa,cause=1,weighting="marginal",times=c(1:350,50),ROC=TRUE)
+plotAUCcurve(roct)
+
+res.SeSpPPVNPV.roc <- SeSpPPVNPV(cutpoint=50, T=test1$delai,delta=test1$rejet_1R,marker=test1$auc_mpa, cause=1,weighting="marginal", times=c(1:350,50))
+
+res.SeSpPPVNPV.roc
+
+ coxfit1 <- coxph(Surv(start, stop,rejet_1R)~auc_cni2+bin50, data=test)
+summary(coxfit1)
+
+#Evolution de l’AUC ROC au cours du temps
+library(risksetROC)
