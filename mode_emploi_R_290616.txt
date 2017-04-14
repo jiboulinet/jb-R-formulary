@@ -146,6 +146,19 @@ aggregates(AUC0.24~specialite*cyp3a5*periode, data=spe, FUNS=FUNS)
 #idem avec by
 tapply(c10$delai,c10$cyp3a5,mean)
 
+ library(dplyr)
+ #categorie
+ hp<-gencolon
+ hp.stats <- hp %>%
+   group_by(as.factor(case)) %>% 
+   count(A388G)
+ hp.stats
+  #continue
+ hp.stats <- hp %>%
+  group_by(visite,organisme_autres) %>% 
+  summarise(mean = mean(auc_cmi, na.rm=T),
+            sd = sd(auc_cmi, na.rm=T),
+            n=n_distinct(auc_cmi))
 #Box and Whisker plot
 bwplot(group ~ AUC, test, xlab = "groupe génotype")
 
