@@ -40,9 +40,22 @@ development <- mdata[ mdata$id%in%dev$id,]
 validation  <- mdata[!mdata$id%in%dev$id,]
 PMwriteMatrix(development,"exdev.csv")
 PMwriteMatrix(validation,"exval.csv")
-
+# set.seed(107)
+# inTrain <- createDataPartition(y = mdata_1$id,  ## the outcome data are needed
+#                                p = .66,  ## The percentage of data in the ## training set
+#                                list = FALSE)## The format of the results
+# mdata_1t<-mdata_1[inTrain,]
+# 
+# ## The output is a set of integers for the rows of Sonar
+# ## that belong in the training set.
+# training <- mdata[ mdata$id%in%mdata_1t$id,]
+# testing  <- mdata[!mdata$id%in%mdata_1t$id,]
+# PMwriteMatrix(training,"exdev.csv")
+# PMwriteMatrix(testing,"exval.csv")
 
 PMcheck("mmf.csv", "model.txt", fix = F, quiet = F)
+
+
 #4) run the model after checking your working directory
 setwd("C:/Documents and Settings/u850/Bureau/ratna_mmf/Runs")
 list.files()
