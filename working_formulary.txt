@@ -53,6 +53,22 @@ PMwriteMatrix(validation,"exval.csv")
 # PMwriteMatrix(training,"exdev.csv")
 # PMwriteMatrix(testing,"exval.csv")
 
+###data spliting
+
+setwd("../Runs")
+mdata<-PMreadMatrix("ex.csv")
+mdata_1<-subset(mdata, !duplicated(id))
+library(caret)
+set.seed(107)
+inTrain <- createDataPartition(y = mdata_1$id,  ## the outcome data are needed
+                               p = .75,  ## The percentage of data in the ## training set
+                               list = FALSE)## The format of the results
+## The output is a set of integers for the rows of Sonar
+## that belong in the training set.
+training <- mdata[ mdata$id%in%inTrain,]
+testing  <- mdata[!mdata$id%in%inTrain,]
+PMwriteMatrix(training,"../src/exdev.csv")
+PMwriteMatrix(testing,"../src/exval.csv")
 PMcheck("mmf.csv", "model.txt", fix = F, quiet = F)
 
 
@@ -134,6 +150,21 @@ name_pat<-data.frame(id=unique(brule_visite0$id))
  op.b0 <- op.29[ op.29$id%in%name_pat$id,]
 
 
+
+##model dev in the dev dataset
+NPrun(model="model.txt", data="exdev.csv", run=17, overwrite=T)
+PMload(17)
+
+
+#create a new csv file with only the time that you want for your lss and only 1 patient eg (time at 0,0.5,1,1.5,2,3,4) 
+mmoptt= training[!is.na(training$out)&training$id==1,]
+mmoptt$time<-round(test$time,0)
+mmoptt2<-rbind(mdata[1,],mmoptt)
+PMwriteMatrix(mmoptt2,"../src/mmoptt.csv")
+
+tps_opt<-MMopt(poppar=final.17, model ="model.txt", predInt=0,data = "mmoptt.csv", nsamp = 2, outeq = 1)
+tps_opt
+plot(tps_opt, log=F)
 #12) Optimal sampling determination for LSS
 #create a new csv file with only the time that you want for your lss and only 1 patient eg (time at 0,0.5,1,1.5,2,3,4) cf sim.csv
 tps_opt<-MMopt(poppar=final.4, model = "gammaem.txt", predInt=0,data = "mmf.csv", nsamp = 4, outeq = 1)
@@ -167,12 +198,12 @@ Function to calculate the mean and sd relative bias and relative RMSE and number
 #function to calculate the mean and sd relative bias and relative RMSE and number of profils out of a p interval
 compauc<-function(start=x, end=y, prob=p, runnumber=z){
   post <- get(paste("post",runnumber,sep="."))
-  AUC_3pts_lss<-makeAUC(post,pred~time,start =x,end=y, icen="median")
+  AUC_3pts_lss<-makeAUC(post,pred~time,start =start,end=end, icen="median")
   names(AUC_3pts_lss)[2]<-"AUC_3pts_lss"
   head(AUC_3pts_lss)
   #auc trapezoid
   mdata_b<-subset(mdataval,evid==0)
-  auc_trap<-makeAUC(mdata_b,out~time,start = x,end=y)
+  auc_trap<-makeAUC(mdata_b,out~time,start = start,end=end)
   names(auc_trap)[2]<-"auc_trap"
   head(auc_trap)
   #file with the 2 aucs
