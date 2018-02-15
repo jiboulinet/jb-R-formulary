@@ -1332,3 +1332,13 @@ plot(AUC_trap,biais_rel_non, xlab = "AUC trapezoidal rule", ylab
 ="Relative biais NONMEM", type = "p", col = "black", pch = 1)
 b<-quantile(biais_rel_non,probs=c(0.05,.5,.95))
 abline(h =b, col = "grey", lty = "dotted")
+
+
+#Calcul nombre de sujet nécessaire  ou puissance modèle cox puissance 80% alpha=5%, psi=40% de non réponse, sigma2 pour AUC de #MMF=20^2 theta HR=0.9?) centrer réduire une variable sd=valeur max-mean/1.96
+ssizeEpiCont.default(power=0.8, theta=4, sigma2=1^2, psi=0.2, rho2=0.1, alpha = 0.05)
+powerEpiCont.default(n = 20, theta = 5, sigma2 = 0.7^2,psi=0.2, rho2=0.1, alpha = 0.05)
+#puissance 80% alpha=5%, psi=40% de non réponse, p=proportion de sujet ave cune AUC> seuil theta HR=0.9?)
+powerEpi.default(n = 20, theta = 4, p = 0.4, psi = 0.2,rho2 = 0.1, alpha = 0.05)
+ssizeEpi.default(power=0.8, theta=10, p=0.2, psi=0.2, rho2=0.01, alpha = 0.05)
+
+  (10-45)/1.96
