@@ -1237,10 +1237,19 @@ head(cox1)
 
 roct<-timeROC(T=cox1$delai,delta=cox1$rejet_1R,marker=-cox1$auc_mpa,cause=1,weighting="cox",times=c(100,200,300),ROC=TRUE)
 plotAUCcurve(roct)
-
-res.SeSpPPVNPV.roc <- SeSpPPVNPV(cutpoint=22, T=cox1$delai,delta=cox1$rejet_1R,marker=cox1$auc_mpa, cause=1,weighting="cox", times=c(100,200,300,400))
-
-res.SeSpPPVNPV.roc
+###time dep roc curve
+# plot AUC curve for albumin and bilirunbin  with pointwise confidence intervals
+plotAUCcurve(ROC.albumin,conf.int=TRUE,col="red")
+plotAUCcurve(ROC.bili,conf.int=TRUE,col="blue",add=TRUE)
+legend("bottomright",c("albumin","bilirunbin"),col=c("red","blue"),lty=1,lwd=2)
+###evaluation seuil
+res.SeSpPPVNPV.bili <- SeSpPPVNPV(cutpoint=0.9,
+                                  T=pbc$time,
+                                  delta=pbc$status,marker=pbc$bili,
+                                  cause=1,weighting="marginal",
+                                  times=quantile(pbc$time,probs=seq(0.2,0.8,0.1)),
+                                  iid=TRUE)
+res.SeSpPPVNPV.bili
 
 Sélectionner que les valeurs >0 dans un tapply
 
